@@ -2,22 +2,23 @@
 
 CREATE DATABASE conservation_db;
 
---create ranger table
-create table ranger (
-    ranger_id SERIAL PRIMARY KEY,
+--create rangers table
+create table rangers (
+    rangers_id SERIAL PRIMARY KEY,
     name VARCHAR(50) not null,
     region varchar(50) not null
 )
 
---insert data into ranger table
-insert INTO ranger (name,region) VALUES 
+--insert data into rangers table
+insert INTO rangers (name,region) VALUES 
 ('Alice Green', 'Northern Hills'),
 ('Bob white', 'River Delta'),
 ('coral king', 'mountain Range');
 
 
---select all from ranger table
-select * from ranger
+
+--select all from rangers table
+select * from rangers
 
 --create species table
 
@@ -51,16 +52,16 @@ select * from species
 CREATE table sightings (
     sighting_id serial primary key,
     species_id int REFERENCES species(species_id),
-    ranger_id int REFERENCES ranger(ranger_id),
+    rangers_id int REFERENCES rangers(rangers_id),
     sighting_time TIMESTAMP not null,
-    locations VARCHAR(100) not null,
+    location VARCHAR(100) not null,
     note text
 
 )
 
 -- insert data in sightings table
 
-insert into sightings (sighting_id, species_id, ranger_id, locations,sighting_time,note) VALUES
+insert into sightings (sighting_id, species_id, rangers_id, location,sighting_time,note) VALUES
 (1,1,1, 'peak ridge', '2024-05-10 07:45:00', 'camera trap image captured'),
 (2,2,2, 'Backwood area', '2024-05-12 16:20:00', 'juvenile seen'),
 (3,3,3, 'Bamboo grove East', '2024-05-15 09:10:00', 'Feeding observed'),
@@ -70,8 +71,8 @@ SELECT * from sightings
 
 
 
---Question 1: register a new ranger
-insert into ranger (name, region) VALUES('Derek Fox', 'Costal Plains');
+--Question 1: register a new rangers
+insert into rangers (name, region) VALUES('Derek Fox', 'Costal Plains');
 
 --Question 2: Count unique species ever sighted
 SELECT count(DISTINCT species_id) as unique_species_counts
@@ -80,14 +81,14 @@ from sightings
 --Question 3: find sighting where location includes "pass"
 
 select * from sightings
-where locations ILIKE '%pass%';
+where location ILIKE '%pass%';
 
 --Question 4: list each anger names and their total number of sighting
 
-select ranger.name, count(sightings.sighting_id) from ranger
-inner join sightings on ranger.ranger_id = sightings.ranger_id
-group by ranger.name  
-order by ranger.name;
+select rangers.name, count(sightings.sighting_id) from rangers
+inner join sightings on rangers.rangers_id = sightings.rangers_id
+group by rangers.name  
+order by rangers.name;
 
 
 --Question 5:list species that have never been sighted
@@ -101,7 +102,7 @@ where species_id not in
 
 select sp.common_name, s.sighting_time, r.name from sightings as s
 join species as sp on s.species_id = sp.species_id
-join ranger as r on s.ranger_id = r.ranger_id
+join rangers as r on s.rangers_id = r.rangers_id
 order by s.sighting_time  DESC
 LIMIT 2;
 
@@ -125,6 +126,6 @@ order by sighting_id;
 
 --Question 9:Delete rangers who have never sighted any species
 
-delete from ranger
-where ranger_id not in (select DISTINCT ranger_id from sightings);
+delete from rangers
+where rangers_id not in (select DISTINCT rangers_id from sightings);
 
